@@ -1,0 +1,54 @@
+name: build
+
+on:
+  push:
+    paths:
+      - 'log/**'
+      - 'config.toml'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux-arm,linux-x64,win-x86,win-x64,win-arm,osx-x64
+        dotnetos: [linux, win, osx]
+        dotnetarch: [x86, x64, arm, arm64]
+        exclude:
+          - dotnetos: linux
+            dotnetarch: x86
+          - dotnetos: osx
+            dotnetarch: x86
+          - dotnetos: osx
+            dotnetarch: arm
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v3
+      - name: environment prepare
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https
+          sudo apt-get update
+          sudo apt-get install -y dotnet-sdk-6.0
+          sudo apt-get install -y p7zip-full
+      - name: build
+        env:
+          DOTNETOS: ${{ matrix.dotnetos }}
+          DOTNETARCH: ${{ matrix.dotnetarch }}
+        run: |
+          mkdir pkg
+          mkdir pkg/test-$DOTNETOS_$DOTNETARCH
+          mkdir pkg/test-$DOTNETOS_$DOTNETARCH/logger
+          sed -i "s/to_replace/$DOTNETOS_$DOTNETARCH/g" config.toml
+          cp config.toml pkg/test-$DOTNETOS_$DOTNETARCH/config.toml
+          cd log
+          dotnet publish -r $DOTNETOS-$DOTNETARCH -p:PublishSingleFile=true --no-self-contained
+          mv bin/Debug/net6.0/$DOTNETOS-$DOTNETARCH/publish/* ../pkg/test-$DOTNETOS_$DOTNETARCH/logger
+          chmod +x -R ../pkg/test-$DOTNETOS_$DOTNETARCH/logger
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: uart_log-${{ matrix.dotnetos }}_${{ matrix.dotnetarch }}
+          path: pkg/

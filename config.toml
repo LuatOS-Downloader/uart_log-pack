@@ -1,0 +1,24 @@
+[pack]
+name = "uart_log"
+version = "1.0.0"
+authors = ["chenxuuu"]
+
+#该包支持的系统架构
+architecture = "to_replace" #待替换为对应的架构
+
+#是否显示在支持的芯片列表中？
+#某些单一功能的通用依赖包，不应显示在列表中
+show = false
+
+#依赖包列表
+#软件会下载完所有依赖包，才会认为下载完成
+[dependencies]
+
+#包功能重定向
+#不使用该包自身路径下的工具，而使用指定依赖包的工具
+#如不想重定向，则留空字符串
+[redirect]
+
+#其他信息，给命令行参数使用
+[others]
+cmd_args = [] # 如用不到，可为空数组
