@@ -39,14 +39,14 @@ jobs:
           DOTNETARCH: ${{ matrix.dotnetarch }}
         run: |
           mkdir pkg
-          mkdir pkg/test-$DOTNETOS_$DOTNETARCH
-          mkdir pkg/test-$DOTNETOS_$DOTNETARCH/logger
+          mkdir pkg/uart_log-$DOTNETOS_$DOTNETARCH
+          mkdir pkg/uart_log-$DOTNETOS_$DOTNETARCH/logger
           sed -i "s/to_replace/$DOTNETOS_$DOTNETARCH/g" config.toml
-          cp config.toml pkg/test-$DOTNETOS_$DOTNETARCH/config.toml
+          cp config.toml pkg/uart_log-$DOTNETOS_$DOTNETARCH/config.toml
           cd log
           dotnet publish -r $DOTNETOS-$DOTNETARCH -p:PublishSingleFile=true --no-self-contained
-          mv bin/Debug/net6.0/$DOTNETOS-$DOTNETARCH/publish/* ../pkg/test-$DOTNETOS_$DOTNETARCH/logger
-          chmod +x -R ../pkg/test-$DOTNETOS_$DOTNETARCH/logger
+          mv bin/Debug/net6.0/$DOTNETOS-$DOTNETARCH/publish/* ../pkg/uart_log-$DOTNETOS_$DOTNETARCH/logger
+          chmod +x -R ../pkg/uart_log-$DOTNETOS_$DOTNETARCH/logger
 
       - uses: actions/upload-artifact@v3
         with:
