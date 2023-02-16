@@ -21,4 +21,4 @@ show = false
 
 #其他信息，给命令行参数使用
 [others]
-cmd_args = [] # 如用不到，可为空数组
+
